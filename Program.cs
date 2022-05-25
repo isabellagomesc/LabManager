@@ -2,7 +2,11 @@
 using LabManager.Database;
 using LabManager.Repositories;
 
-var databaseSetup = new DatabaseSetup();
+var databaseConfig = new DatabaseConfig();
+
+var databaseSetup = new DatabaseSetup(databaseConfig);
+
+var computerRepository = new ComputerRepository(databaseConfig);
 
 //Routing
 var modelName = args[0];
@@ -11,7 +15,6 @@ var modelAction = args[1];
 if (modelName == "Computer")
 {
 
-    var computerRepository = new ComputerRepository();
     
     if (modelAction == "List")
     {   

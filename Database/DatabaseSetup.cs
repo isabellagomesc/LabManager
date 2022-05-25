@@ -2,10 +2,13 @@ using Microsoft.Data.Sqlite;
 
 namespace LabManager.Database;
 
-class DatabaseSetup{
+class DatabaseSetup
+{
+    private readonly DatabaseConfig _databaseConfig;
 
-    public DatabaseSetup()
+    public DatabaseSetup(DatabaseConfig databaseConfig)
     {
+        _databaseConfig = databaseConfig;
         CreateComputerTable();
         CreateLabTable();
     }
@@ -13,7 +16,7 @@ class DatabaseSetup{
 
     private void CreateComputerTable()
     {
-        var connection = new SqliteConnection("Data Source=database.db");
+        var connection = new SqliteConnection(_databaseConfig.ConnectionString);
 
         connection.Open();
         var command = connection.CreateCommand();
