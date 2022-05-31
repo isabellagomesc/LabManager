@@ -32,12 +32,24 @@ if(modelName == "Computer")
         computerRepository.Save(computer);
     }
 
+    if(modelAction == "Update")
+    {
+        var id = Convert.ToInt32(args[2]);
+        string ram = args[3];
+        string processor = args[4];
+
+        var computer = new Computer(id, ram, processor);
+        computerRepository.Update(computer);
+    }
+
     if(modelAction == "Show")
     {
         var id = Convert.ToInt32(args[2]);
         var computer = computerRepository.GetById(id);
         Console.WriteLine($"{computer.Id}, {computer.Ram}, {computer.Processor}");
     }
+
+    
     
 if(modelName == "Lab")
 {
