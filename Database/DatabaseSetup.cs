@@ -23,7 +23,7 @@ class DatabaseSetup
 
         command.CommandText = @"
             CREATE TABLE IF NOT EXISTS Computers(
-                ID int not null primary key,
+                id int not null primary key,
                 ram varchar(100) not null,
                 processor varchar(100) not null
             );
