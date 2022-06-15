@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Data.SqLite" Version="6.0.5" />
+    <PackageReference Include="Microsoft.Data.SqLite" Version="6.0.6" />
   </ItemGroup>
 
 </Project>

@@ -3,10 +3,10 @@ namespace LabManager.Models;
 class Computer
 {
     public int Id { get; set; }
-    public String Ram { get; set; }
-    public String Processor { get; set; }
+    public string Ram { get; set; }
+    public string Processor { get; set; }
 
-    public Computer(int id, string ram,string processor)
+    public Computer(int id, string ram, string processor)
     {
         Id = id;
         Ram = ram;

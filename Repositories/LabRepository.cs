@@ -4,87 +4,89 @@ using Microsoft.Data.Sqlite;
 
 namespace LabManager.Repositories;
 
-class ComputerRepository
+class LabRepository
 {
+
     private readonly DatabaseConfig _databaseConfig;
 
-    public ComputerRepository(DatabaseConfig databaseConfig)
+    public LabRepository(DatabaseConfig databaseConfig) 
     {
         _databaseConfig = databaseConfig;
     }
 
-    public List<Computer> GetAll()
+    public List<Lab> GetAll()
     {
-        var computers = new List<Computer>();
-
+        var labs = new List<Lab>();
+        
         var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Computers";
+        command.CommandText = "SELECT * FROM Labs";
         var reader = command.ExecuteReader();
         
         while(reader.Read())
         {
-            var computer = ReaderToComputer(reader); 
+            var lab = ReaderToLab(reader);
             
-            computers.Add(computer);
+            labs.Add(lab);
         }
         
         connection.Close();
-        
-        return computers;
-    }
 
-    public Computer Save(Computer computer)
+        return labs;
+    }
+    public Lab Save(Lab lab)
     {
         var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = "INSERT INTO Computers VALUES($id, $ram, $processor)";
-        command.Parameters.AddWithValue("$id", computer.Id);
-        command.Parameters.AddWithValue("$ram", computer.Ram);
-        command.Parameters.AddWithValue("$processor", computer.Processor);
+        command.CommandText = "INSERT INTO Labs VALUES($id, $number, $name, $block)";
+        command.Parameters.AddWithValue("$id", lab.Id);
+        command.Parameters.AddWithValue("$number", lab.Number);
+        command.Parameters.AddWithValue("$name", lab.Name);
+        command.Parameters.AddWithValue("$block", lab.Block);
 
         command.ExecuteNonQuery();
         connection.Close();
 
-        return computer;
+        return lab;
     }
 
-    public Computer Update(Computer computer)
+    public Lab Update(Lab lab)
     {
         var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = "UPDATE Computers SET ram = ($ram), processor = ($processor) WHERE id = ($id)";
-        command.Parameters.AddWithValue("$id", computer.Id);
-        command.Parameters.AddWithValue("$ram", computer.Ram);
-        command.Parameters.AddWithValue("$processor", computer.Processor);
+        command.CommandText = "UPDATE Labs SET number = ($number), name = ($name), block = ($block) WHERE id = ($id)";
+        command.Parameters.AddWithValue("$id", lab.Id);
+        command.Parameters.AddWithValue("$number", lab.Number);
+        command.Parameters.AddWithValue("$name", lab.Name);
+        command.Parameters.AddWithValue("$block", lab.Block);
 
         command.ExecuteNonQuery();
         connection.Close();
 
-        return computer;
+        return lab;
     }
 
-    public Computer GetById(int id)
+    public Lab GetById(int id)
     {
         var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Computers WHERE id = ($id)";
+        command.CommandText = "SELECT * FROM Labs WHERE id = ($id)";
         command.Parameters.AddWithValue("$id", id);
         var reader = command.ExecuteReader();
 
         reader.Read(); //uma linha só pra ler (por isso não esta no while)
-        var computer = ReaderToComputer(reader); 
+        var lab = ReaderToLab(reader); 
 
         connection.Close();
-        return computer;
+        return lab;
     }
 
     public void Delete(int id)
@@ -93,7 +95,7 @@ class ComputerRepository
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = "DELETE FROM Computers WHERE id = ($id)";
+        command.CommandText = "DELETE FROM Labs WHERE id = ($id)";
         command.Parameters.AddWithValue("$id", id);
         
         command.ExecuteNonQuery();
@@ -106,7 +108,7 @@ class ComputerRepository
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = "SELECT count(id) FROM Computers WHERE id = ($id)";
+        command.CommandText = "SELECT count(id) FROM Labs WHERE id = ($id)";
         command.Parameters.AddWithValue("$id", id);
         
         /*
@@ -120,10 +122,10 @@ class ComputerRepository
         return result;
     }
 
-    private Computer ReaderToComputer(SqliteDataReader reader)
+    private Lab ReaderToLab(SqliteDataReader reader)
     {
-        var computer = new Computer(reader.GetInt32(0), reader.GetString(1), reader.GetString(2));
+        var lab = new Lab(reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetString(3));
 
-        return computer;
+        return lab;
     }
 }

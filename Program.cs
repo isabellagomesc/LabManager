@@ -7,6 +7,7 @@ using LabManager.Models;
 var databaseConfig = new DatabaseConfig();
 var databaseSetup = new DatabaseSetup(databaseConfig);
 var computerRepository = new ComputerRepository(databaseConfig);
+var labRepository = new LabRepository(databaseConfig);
 
 var modelName = args[0];
 var modelAction = args[1];
@@ -61,26 +62,17 @@ if(modelName == "Computer")
         computerRepository.Delete(id);
     }
     
+}
+
 if(modelName == "Lab")
 {
     if(modelAction == "List")
     {
-        Console.WriteLine("Lab List");
-        var connection = new SqliteConnection("Data Source=database.db");
-        connection.Open();
-
-        var command = connection.CreateCommand();
-
-        command.CommandText = "SELECT * FROM Lab";
-
-        var reader = command.ExecuteReader();
-        
-        while(reader.Read())
+        Console.WriteLine("Lista de Laboratórios:");
+        foreach (var lab in labRepository.GetAll())
         {
-            Console.WriteLine("{0}, {1}, {2}, {3}", reader.GetInt32(0), reader.GetInt32(1), reader.GetString(2), reader.GetString(3));
+            Console.WriteLine($"{lab.Id}, {lab.Number}, {lab.Name}, {lab.Block}");
         }
-        
-        connection.Close();
     }
 
     if(modelAction == "New")
@@ -90,20 +82,37 @@ if(modelName == "Lab")
         string name = args[4];
         string block = args[5];
 
-        var connection = new SqliteConnection("Data Source=database.db");
-        connection.Open();
-
-        var command = connection.CreateCommand();
-
-        command.CommandText = "INSERT INTO Lab VALUES($id, $number, $name, $block)";
-        command.Parameters.AddWithValue("$id", id);
-        command.Parameters.AddWithValue("$number", number);
-        command.Parameters.AddWithValue("$name", name);
-        command.Parameters.AddWithValue("$block", block);
-
-        command.ExecuteNonQuery();
-
-        connection.Close();
+        var lab = new Lab(id, number, name, block);
+        labRepository.Save(lab);
     }
-}
+
+    if(modelAction == "Update")
+    {
+        var id = Convert.ToInt32(args[2]);
+        var number = args[3];
+        string name = args[4];
+        string block = args[5];
+
+        var lab = new Lab(id, number, name, block);
+        labRepository.Update(lab);
+    }
+
+    if(modelAction == "Show")
+    {
+        var id = Convert.ToInt32(args[2]);
+        if(labRepository.ExistsById(id))
+        {
+            var lab = labRepository.GetById(id);
+            Console.WriteLine($"{lab.Id}, {lab.Number}, {lab.Name}, {lab.Block}");
+        } else{
+            Console.WriteLine($"O Lab com Id {id} não existe");
+        }
+    
+    }
+
+    if(modelAction == "Delete")
+    {
+        var id = Convert.ToInt32(args[2]);
+        labRepository.Delete(id);
+    }
 }
