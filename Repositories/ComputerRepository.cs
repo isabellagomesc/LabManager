@@ -1,6 +1,7 @@
 using LabManager.Database;
 using LabManager.Models;
 using Microsoft.Data.Sqlite;
+using Dapper;
 
 namespace LabManager.Repositories;
 
@@ -13,45 +14,30 @@ class ComputerRepository
         _databaseConfig = databaseConfig;
     }
 
-    public List<Computer> GetAll()
+    public IEnumerable<Computer> GetAll()
     {
-        var computers = new List<Computer>();
-
         var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
-        var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Computers";
-        var reader = command.ExecuteReader();
-        
-        while(reader.Read())
-        {
-            var computer = ReaderToComputer(reader); 
-            
-            computers.Add(computer);
-        }
-        
+        var computers = connection.Query<Computer>("SELECT * FROM Computers");
+
         connection.Close();
-        
+
         return computers;
     }
+
 
     public Computer Save(Computer computer)
     {
         var connection = new SqliteConnection(_databaseConfig.ConnectionString);
         connection.Open();
 
-        var command = connection.CreateCommand();
-        command.CommandText = "INSERT INTO Computers VALUES($id, $ram, $processor)";
-        command.Parameters.AddWithValue("$id", computer.Id);
-        command.Parameters.AddWithValue("$ram", computer.Ram);
-        command.Parameters.AddWithValue("$processor", computer.Processor);
+        connection.Execute("INSERT INTO Computers VALUES(@Id, @Ram, @Processor)", computer);
 
-        command.ExecuteNonQuery();
         connection.Close();
-
         return computer;
     }
+
 
     public Computer Update(Computer computer)
     {
@@ -76,14 +62,16 @@ class ComputerRepository
         connection.Open();
 
         var command = connection.CreateCommand();
-        command.CommandText = "SELECT * FROM Computers WHERE id = ($id)";
+        command.CommandText = "SELECT * FROM Computers WHERE id = $id;";
         command.Parameters.AddWithValue("$id", id);
+
         var reader = command.ExecuteReader();
+        reader.Read();
 
-        reader.Read(); //uma linha só pra ler (por isso não esta no while)
-        var computer = ReaderToComputer(reader); 
+        var computer = ReaderToComputer(reader);
 
-        connection.Close();
+        connection.Close(); 
+
         return computer;
     }
 
